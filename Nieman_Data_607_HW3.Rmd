@@ -1,0 +1,87 @@
+---
+title: "Nieman_Data_607_HW3"
+author: "Jeff Nieman"
+date: "February 20, 2016"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+#Homework #3 for Jeff Nieman
+
+library(stringr)
+
+#Question 8.3a
+#First I need to duplicate the data for the question.  This is found in "Automated Data Collection in R", p. 206.
+raw.data <- c("555-1239Moe Szlyslak(636) 555-0113Burns, C. Montgomery555-6542Rev. Timothy Lovejoy555 8904Ned Flanders636-555-3226Simpson, Homer5553642Dr. Julius Hibbert")
+name <- unlist(str_extract_all(raw.data, "[[:alpha:]., ]{2,}"))
+name
+# Now that we have just the names we need to move them so we simply have first name last name.  I am considering the first name of C. MOntgomery Burns as "C." since this is not a title. 
+name1 <- str_replace(name, pattern="Burns, C. Montgomery", replacement="C. Burns")
+name1
+name2 <- str_replace(name1,pattern="Simpson, Homer", replacement="Homer Simpson")
+name2
+name3<- gsub("Rev. |Dr. ", "", name2)
+name3
+
+#Question 8.3b
+#The str_detect fuction will give me a true/false output for the titles.
+str_detect(name, "Rev.|Dr.")
+
+#Question 8.3c
+#The approach I took here was to eliminate titles and to count the spaces between the names.  Then using string count I call true those who have 2 spaces as a middle name, while those who have one space will be false with no middle name shown.
+name4<- gsub("Rev. |Dr. ","", name)
+name4
+spacecount <- str_count(name4, pattern=" ")
+spacecount
+str_detect(spacecount, pattern="2")
+
+#Question 8.6a
+#For fun and practice I did question 6 which allowed me to learn about str_c as a way of combining.
+email <- ("chunkylover53[at]aol[dot]com")
+email
+email1 <- str_extract(email, "[a-z0-9]+")
+email1
+email2 <- "@"
+email3 <- str_sub(email,start=18,end=20)
+email3
+email4="."
+email5 <- str_sub(email,start=26,end=28)
+email5
+emailfinal<- str_c(email1,email2,email3,email4,email5)
+emailfinal
+
+#Question 8.6b
+#Use str_extract_all to see numerical part of email address.  Using simply [:digit:] will separate the 5 and 3.  You need to add {2} to allow for 2 digit   You could also use [:digit:][:digit:].
+b <-  str_extract_all(emailfinal, "[:digit:]{2}")
+b
+c <- str_extract_all(emailfinal, "[:digit:][:digit:]")
+c
+
+#Question 8.6c
+#Using "\\D" will cause two problems.  First the capital letter will cause it to show no digits, it needs to be "\\d".  Second, there needs to be a {2} or some other means to bring in the two digit number.
+d <- str_extract_all(emailfinal, "\\d{2}")
+d
+
+#Question 8.7 
+#Using "<.+>" fails because it calls all characters between the < and > and there is a > at the end.  This will pull the entire string.  A better solution using predefined symbols is shown below.
+s <- "<title>+++BREAKING NEWS+++<title>"
+s1 <- str_extract(s, "<\\w+>")
+s1
+
+#Question 8.8  
+#There were two problems with the approach of the question.  First, the symbol "^" was first so it negated the numbers, reading the symbol as "not [0-9].  Second, the symbol "-" was left out.  Corrected approach is shown below.
+test <- "(5-3)^2=5^2-2*5*3+3^2 conforms to the binomial theorem."
+test1 <- str_extract_all(test, "[0-9-=+*()^]+")
+test1
+
+
+#Question 8.9
+#The key here is to extract the capital letters and the punction.  Solution provided below to see the secret message.  Although< i like to think that I am not a supernerd!
+code <- "clcopCowlzmstc0d87wnkig7OvdicpNuggvhryn92Gjuwczi8hqrfpRxs5Aj5dwpn0TanwoUwisdij7Lj8kpf03AT5Idr3coc0bt7yczjatOaootj55t3Nj3ne6c4Sfek.rlwlYwwojigOd6vrfUrbz2.2bkAnbhzgv4R9i05zEcrop.wAgnb.SqoU65fPalotfb7wEm24k6t3sR9zqe5fy89n6Nd5t9kc4fE905gmc4Rgxo5nhDk!gr"
+a <- str_extract_all(code,"[[:upper:],[:punct:]]")
+a
+```
